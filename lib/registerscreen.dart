@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 import 'package:socbook/loginscreen.dart';
+import 'package:http/http.dart' as http;
 
-void main() => runApp(registerscreen());
+void main() => runApp(Registerscreen());
 
-class registerscreen extends StatefulWidget {
+class Registerscreen extends StatefulWidget {
   @override
-  _registerscreenState createState() => _registerscreenState();
+  _RegisterscreenState createState() => _RegisterscreenState();
 }
 
-class _registerscreenState extends State<registerscreen> {
+class _RegisterscreenState extends State<Registerscreen> {
   bool _isChecked = false;
   double screenHeight;
+  String urlRegister = "https://socbookweb.000webhostapp.com/register_user.php";
   TextEditingController _nameEditingController = new TextEditingController();
   TextEditingController _emailEditingController = new TextEditingController();
   TextEditingController _phoneditingController = new TextEditingController();
@@ -21,10 +24,11 @@ class _registerscreenState extends State<registerscreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
-        primarySwatch: Colors.brown,
+        primarySwatch: Colors.blue,
       ),
       title: 'Material App',
       home: Scaffold(
+        resizeToAvoidBottomPadding: false,
         body: Stack(
           children: <Widget>[
             upperHalf(context),
@@ -164,7 +168,7 @@ class _registerscreenState extends State<registerscreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Icon(
-            Icons.shopping_basket,
+            Icons.book,
             size: 40,
             color: Colors.white,
           ),
@@ -232,9 +236,41 @@ class _registerscreenState extends State<registerscreen> {
     );
   }
 
-  void _onRegister() {}
+  void _onRegister() {
+    String name = _nameEditingController.text;
+    String email = _emailEditingController.text;
+    String phone = _phoneditingController.text;
+    String password = _passEditingController.text;
+    if (!_isChecked) {
+      Toast.show("Please Accept Term", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+
+    http.post(urlRegister, body: {
+      "name": name,
+      "email": email,
+      "phone": phone,
+      "password": password,
+    }).then((res) {
+      if (res.body == "success") {
+        Navigator.pop(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => Loginscreen()));
+        Toast.show("Registration success", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      } else {
+        Toast.show("Registration failed", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      }
+    }).catchError((err) {
+      print(err);
+    });
+  }
+
   void _loginScreen() {
     Navigator.pop(context,
-        MaterialPageRoute(builder: (BuildContext context) => loginscreen()));
+        MaterialPageRoute(builder: (BuildContext context) => Loginscreen()));
   }
 }
