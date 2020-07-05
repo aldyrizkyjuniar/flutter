@@ -46,6 +46,9 @@ dependencies:
   flutter_barcode_scanner: ^1.0.0
   webview_flutter: ^0.3.14+1
   random_string: ^1.1.0
+  flutter_login: ^1.0.14
+  flutter_screenutil: ^2.1.0
+
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +70,7 @@ flutter:
    assets:
     - images/book.jpg
     - images/phonecam.jpg
+    - images/splash.jpg
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -10,6 +10,7 @@ import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/services.dart';
  
 void main() => runApp(Editproduct());
  
@@ -38,12 +39,9 @@ class _EditproductState extends State<Editproduct> {
   bool _takepicturelocal = false;
   String selectedType;
   List<String> listType = [
-    "Drink",
-    "Canned Food",
-    "Vegetable",
-    "Meat",
-    "Bread",
-    "Other",
+    "design",
+    "programming",
+    "gaming",
   ];
 
   @override
@@ -57,6 +55,7 @@ class _EditproductState extends State<Editproduct> {
     weigthEditingController.text = widget.product.weigth;
     selectedType = widget.product.type;
     print(weigthEditingController.text);
+    print(typeEditingController.text);
   }
   @override
   Widget build(BuildContext context) {
@@ -134,7 +133,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text("ID Produk",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.white,
+                                                color: Colors.blue,
                                               ))),
                                     ),
                                     TableCell(
@@ -146,7 +145,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text(
                                             " " + widget.product.pid,
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.blue,
                                             ),
                                           )),
                                     )),
@@ -159,7 +158,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text("Product Name",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.white,
+                                                color: Colors.blue,
                                               ))),
                                     ),
                                     TableCell(
@@ -168,7 +167,7 @@ class _EditproductState extends State<Editproduct> {
                                         height: 30,
                                         child: TextFormField(
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.blue,
                                             ),
                                             controller: prnameEditingController,
                                             keyboardType: TextInputType.text,
@@ -181,7 +180,7 @@ class _EditproductState extends State<Editproduct> {
                                             decoration: new InputDecoration(
                                               contentPadding:
                                                   const EdgeInsets.all(5),
-                                              fillColor: Colors.white,
+                                              fillColor: Colors.blue,
                                               border: new OutlineInputBorder(
                                                 borderRadius:
                                                     new BorderRadius.circular(
@@ -202,7 +201,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text("Price (RM)",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white))),
+                                                  color: Colors.blue))),
                                     ),
                                     TableCell(
                                       child: Container(
@@ -210,7 +209,7 @@ class _EditproductState extends State<Editproduct> {
                                         height: 30,
                                         child: TextFormField(
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.blue,
                                             ),
                                             controller: priceEditingController,
                                             keyboardType: TextInputType.number,
@@ -222,7 +221,7 @@ class _EditproductState extends State<Editproduct> {
                                                   .requestFocus(focus1);
                                             },
                                             decoration: new InputDecoration(
-                                              fillColor: Colors.white,
+                                              fillColor: Colors.blue,
                                               border: new OutlineInputBorder(
                                                 borderRadius:
                                                     new BorderRadius.circular(
@@ -242,7 +241,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text("Quantity",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white))),
+                                                  color: Colors.blue))),
                                     ),
                                     TableCell(
                                       child: Container(
@@ -250,7 +249,7 @@ class _EditproductState extends State<Editproduct> {
                                         height: 30,
                                         child: TextFormField(
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.blue,
                                             ),
                                             controller: qtyEditingController,
                                             keyboardType: TextInputType.number,
@@ -262,7 +261,7 @@ class _EditproductState extends State<Editproduct> {
                                                   .requestFocus(focus2);
                                             },
                                             decoration: new InputDecoration(
-                                              fillColor: Colors.white,
+                                              fillColor: Colors.blue,
                                               border: new OutlineInputBorder(
                                                 borderRadius:
                                                     new BorderRadius.circular(
@@ -282,7 +281,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text("Type",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white))),
+                                                  color: Colors.blue))),
                                     ),
                                     TableCell(
                                       child: Container(
@@ -295,8 +294,7 @@ class _EditproductState extends State<Editproduct> {
                                             hint: Text(
                                               'Type',
                                               style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    101, 255, 218, 50),
+                                                color: Colors.blue, 
                                               ),
                                             ), // Not necessary for Option 1
                                             value: selectedType,
@@ -310,11 +308,7 @@ class _EditproductState extends State<Editproduct> {
                                               return DropdownMenuItem(
                                                 child: new Text(selectedType,
                                                     style: TextStyle(
-                                                        color: Color.fromRGBO(
-                                                            101,
-                                                            255,
-                                                            218,
-                                                            50))),
+                                                        color: Colors.blue)),
                                                 value: selectedType,
                                               );
                                             }).toList(),
@@ -331,7 +325,7 @@ class _EditproductState extends State<Editproduct> {
                                           child: Text("Weigth (gram)",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white))),
+                                                  color: Colors.blue))),
                                     ),
                                     TableCell(
                                       child: Container(
@@ -339,7 +333,7 @@ class _EditproductState extends State<Editproduct> {
                                         height: 30,
                                         child: TextFormField(
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.blue,
                                             ),
                                             controller: weigthEditingController,
                                             keyboardType: TextInputType.number,
@@ -351,7 +345,7 @@ class _EditproductState extends State<Editproduct> {
                                                   .requestFocus(focus3);
                                             },
                                             decoration: new InputDecoration(
-                                              fillColor: Colors.white,
+                                              fillColor: Colors.blue,
                                               border: new OutlineInputBorder(
                                                 borderRadius:
                                                     new BorderRadius.circular(
@@ -371,7 +365,7 @@ class _EditproductState extends State<Editproduct> {
                               minWidth: screenWidth / 1.5,
                               height: 40,
                               child: Text('Update Product'),
-                              color: Color.fromRGBO(101, 255, 218, 50),
+                              color: Colors.blue,
                               textColor: Colors.black,
                               elevation: 5,
                               onPressed: () => updateProductDialog(),
@@ -427,18 +421,18 @@ class _EditproductState extends State<Editproduct> {
           title: new Text(
             "Update Product Id " + widget.product.pid,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.blue,
             ),
           ),
           content:
-              new Text("Are you sure?", style: TextStyle(color: Colors.white)),
+              new Text("Are you sure?", style: TextStyle(color: Colors.blue)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text(
                 "Yes",
                 style: TextStyle(
-                  color: Color.fromRGBO(101, 255, 218, 50),
+                  color: Colors.blue,
                 ),
               ),
               onPressed: () {
@@ -450,7 +444,7 @@ class _EditproductState extends State<Editproduct> {
               child: new Text(
                 "No",
                 style: TextStyle(
-                  color: Color.fromRGBO(101, 255, 218, 50),
+                  color: Colors.blue,
                 ),
               ),
               onPressed: () {
@@ -495,7 +489,7 @@ class _EditproductState extends State<Editproduct> {
     
     if (_image!=null){
        base64Image = base64Encode(_image.readAsBytesSync());
-      http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
+      http.post("https://socbookweb.000webhostapp.com/php/update_product.php", body: {
       "prid": widget.product.pid,
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,
@@ -519,7 +513,7 @@ class _EditproductState extends State<Editproduct> {
       pr.hide();
     });
     }else{
-          http.post("https://slumberjer.com/grocery/php/update_product.php", body: {
+          http.post("https://socbookweb.000webhostapp.com/php/update_product.php", body: {
       "prid": widget.product.pid,
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,

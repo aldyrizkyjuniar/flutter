@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:socbook/orderdetails.dart';
 import 'package:http/http.dart' as http;
+import 'order.dart';
 import 'user.dart';
 import 'package:intl/intl.dart';
-
 
 class PaymentHistoryScreen extends StatefulWidget {
   final User user;
@@ -17,12 +18,13 @@ class PaymentHistoryScreen extends StatefulWidget {
 
 class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   List _paymentdata;
-  List _orderdetails;
+  
 
   String titlecenter = "Loading payment history...";
-  final f = new DateFormat('dd-MM-yyyy hh:mm a');
+  final f = new DateFormat('dd-MM-yyyy');
   var parsedDate;
   double screenHeight, screenWidth;
+  
   @override
   void initState() {
     super.initState();
@@ -51,7 +53,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                           child: Text(
                   titlecenter,
                   style: TextStyle(
-                      color: Color.fromRGBO(101, 255, 218, 50),
+                      color: Colors.blue,
                       fontSize: 22,
                       fontWeight: FontWeight.bold),
                 ))))
@@ -75,7 +77,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                           child: Text(
                                             (index + 1).toString(),
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.blue),
                                           )),
                                       Expanded(
                                           flex: 2,
@@ -83,7 +85,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                             "RM " +
                                                 _paymentdata[index]['total'],
                                             style:
-                                                TextStyle(color: Colors.white),
+                                                TextStyle(color: Colors.blue),
                                           )),
                                       Expanded(
                                           flex: 4,
@@ -94,20 +96,20 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                               Text(
                                                 _paymentdata[index]['orderid'],
                                                 style: TextStyle(
-                                                    color: Colors.white),
+                                                    color: Colors.blue),
                                               ),
                                               Text(
                                                 _paymentdata[index]['billid'],
                                                 style: TextStyle(
-                                                    color: Colors.white),
+                                                    color: Colors.blue),
                                               ),
                                             ],
                                           )),
                                       Expanded(
                                         child: Text(
-                                          f.format(DateTime.parse(
-                                              _paymentdata[index]['date'])),
-                                          style: TextStyle(color: Colors.white),
+                                          
+                                              _paymentdata[index]['date'],
+                                          style: TextStyle(color: Colors.blue),
                                         ),
                                         flex: 3,
                                       ),
@@ -122,7 +124,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
 
   Future<void> _loadPaymentHistory() async {
     String urlLoadJobs =
-    "https://socbookweb.000webhostapp.com/load_paymenthistory.php";
+        "https://socbookweb.000webhostapp.com/load_paymenthistory.php";
     await http
         .post(urlLoadJobs, body: {"email": widget.user.email}).then((res) {
       print(res.body);
@@ -142,60 +144,18 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     });
   }
 
-  Future<void> _loadOrderDetails(int index) async {
-    String urlLoadJobs =
-    "https://socbookweb.000webhostapp.com/load_carthistory.php";
-    await http.post(urlLoadJobs, body: {
-      "orderid": _paymentdata[index]['orderid'],
-    }).then((res) {
-      print(res.body);
-      if (res.body == "nodata") {
-        setState(() {
-          _orderdetails = null;
-          titlecenter = "No Previous Payment";
-        });
-      } else {
-        setState(() {
-          var extractdata = json.decode(res.body);
-          _orderdetails = extractdata["payment"];
-        });
-      }
-    }).catchError((err) {
-      print(err);
-    });
-  }
+  loadOrderDetails(int index) {
+    Order order = new Order(
+        billid: _paymentdata[index]['billid'],
+        orderid: _paymentdata[index]['orderid'],
+        total: _paymentdata[index]['total'],
+        dateorder: _paymentdata[index]['date']);
 
-  Future<void> loadOrderDetails(int index) async {
-    await _loadOrderDetails(index);
-
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
-              title: new Text(
-                'Order Details',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              content: SingleChildScrollView(
-                  child: Column(children: <Widget>[
-                Text(
-                  "Order ID: " + _paymentdata[index]['orderid'],
-                  style: TextStyle(color: Colors.white),
-                ),
-                Container(
-                  height: screenHeight /1,
-                  
-                    child: ListView.builder(
-                        itemCount: _paymentdata == null ? 1 : _paymentdata.length,
-                        itemBuilder: (context, index) {
-                          return Text(_paymentdata[index]['name']);
-                        }
-                ))
-              ])));
-        });
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => OrderDetailScreen(
+                  order: order,
+                )));
   }
 }

@@ -1,31 +1,34 @@
+  
 import 'dart:async';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
+
 import 'user.dart';
 
-class PaymentScreen extends StatefulWidget {
+class StoreCredit extends StatefulWidget {
   final User user;
-  final String orderid, val;
-  PaymentScreen({this.user, this.orderid, this.val});
-  @override
-  _PaymentScreenState createState() => _PaymentScreenState();
-}
+  final String  val;
+  StoreCredit({this.user,  this.val});
 
-class _PaymentScreenState extends State<PaymentScreen> {
+  @override
+  _StoreCreditScreenState createState() => _StoreCreditScreenState();
+}
+class _StoreCreditScreenState extends State<StoreCredit> {
   Completer<WebViewController> _controller = Completer<WebViewController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('PAYMENT'),
+          title: Text('BUY STORE CREDIT'),
+          // backgroundColor: Colors.deepOrange,
         ),
         body: Column(
           children: <Widget>[
             Expanded(
               child: WebView(
                 initialUrl:
-                'https://socbookweb.000webhostapp.com/payment.php?email='+
+                    'https://socbookweb.000webhostapp.com/buycredit.php?email=' +
                         widget.user.email +
                         '&mobile=' +
                         widget.user.phone +
@@ -33,8 +36,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         widget.user.name +
                         '&amount=' +
                         widget.val +
-                        '&orderid=' +
-                        widget.orderid,
+                        '&csc=' +
+                        widget.user.credit,
                 javascriptMode: JavascriptMode.unrestricted,
                 onWebViewCreated: (WebViewController webViewController) {
                   _controller.complete(webViewController);

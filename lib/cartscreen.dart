@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'Mainscreen.dart';
 import 'payment.dart';
 import 'package:intl/intl.dart';
 import 'package:random_string/random_string.dart';
@@ -24,7 +25,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  String server = "https://socbookweb.000webhostapp.com/";
+  String server = "https://socbookweb.000webhostapp.com";
   List cartData;
   double screenHeight, screenWidth;
   bool _selfPickup = true;
@@ -59,7 +60,14 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text('My Cart'),
-        ),
+       actions: <Widget>[
+          IconButton(
+            icon: Icon(MdiIcons.deleteEmpty),
+            onPressed: () {
+              deleteAll();
+            },
+          ),
+        ]),
         body: Container(
             child: Column(
           children: <Widget>[
@@ -386,7 +394,7 @@ class _CartScreenState extends State<CartScreen> {
                                     color: Colors.blue,
                                     textColor: Colors.black,
                                     elevation: 10,
-                                    onPressed: makePayment,
+                                    onPressed: makePaymentDialog,
                                   ),
                                 ],
                               ),
@@ -559,6 +567,16 @@ class _CartScreenState extends State<CartScreen> {
     }).then((res) {
       print(res.body);
       pr.hide();
+      if (res.body == "Cart Empty") {
+        //Navigator.of(context).pop(false);
+        widget.user.quantity = "0";
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => Mainscreen(
+                      user: widget.user,
+                    )));
+      }
       setState(() {
         var extractdata = json.decode(res.body);
         cartData = extractdata["cart"];
@@ -913,8 +931,58 @@ class _CartScreenState extends State<CartScreen> {
       print(_totalprice);
     });
   }
+  void makePaymentDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        title: new Text(
+          'Proceed with payment?',
+          style: TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+        content: new Text(
+          'Are you sure?',
+          style: TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                makePayment();
+              },
+              child: Text(
+                "Ok",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              )),
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              )),
+        ],
+      ),
+    );
+  }
 
-  Future<void> makePayment() async {
+   Future<void> makePayment() async {
+     if (amountpayable < 0) {
+      double newamount = amountpayable * -1;
+      await _payusingstorecredit(newamount);
+      _loadCart();
+      return;
+    }
     if (_selfPickup) {
       print("PICKUP");
       Toast.show("Self Pickup", context,
@@ -929,7 +997,7 @@ class _CartScreenState extends State<CartScreen> {
     }
     var now = new DateTime.now();
     var formatter = new DateFormat('ddMMyyyy-');
-    String orderid = widget.user.email.substring(1, 4) +
+    String orderid = widget.user.email.substring(1,4) +
         "-" +
         formatter.format(now) +
         randomAlphaNumeric(6);
@@ -944,6 +1012,15 @@ class _CartScreenState extends State<CartScreen> {
                 )));
     _loadCart();
   }
+   String generateOrderid() {
+    var now = new DateTime.now();
+    var formatter = new DateFormat('ddMMyyyy-');
+    String orderid = widget.user.email.substring(1, 4) +
+        "-" +
+        formatter.format(now) +
+        randomAlphaNumeric(6);
+    return orderid;
+  }
 
   void deleteAll() {
     showDialog(
@@ -954,7 +1031,7 @@ class _CartScreenState extends State<CartScreen> {
         title: new Text(
           'Delete all items?',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.blue,
           ),
         ),
         actions: <Widget>[
@@ -995,5 +1072,27 @@ class _CartScreenState extends State<CartScreen> {
         ],
       ),
     );
+  }
+  Future<void> _payusingstorecredit(double newamount) async {
+    //insert carthistory
+    //remove cart content
+    //update product quantity
+    //update credit in user
+    ProgressDialog pr = new ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: true);
+    pr.style(message: "Updating cart...");
+    pr.show();
+    String urlPayment = server + "/paymentsc.php";
+    await http.post(urlPayment, body: {
+      "userid": widget.user.email,
+      "amount": _totalprice.toStringAsFixed(2),
+      "orderid": generateOrderid(),
+      "newcr": newamount.toStringAsFixed(2)
+    }).then((res) {
+      print(res.body);
+      pr.hide();
+    }).catchError((err) {
+      print(err);
+    });
   }
 }

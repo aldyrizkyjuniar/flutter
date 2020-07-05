@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
               Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage('images/book.jpg'),
+                        image: AssetImage('images/splash.jpg'),
                         fit: BoxFit.cover)),
               ),
               Container(height: 300, child: ProgressIndicator())
@@ -90,7 +90,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
       child: new Container(
           child: CircularProgressIndicator(
         value: animation.value,
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.black),
+        valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
       )),
     );
   }
@@ -105,7 +105,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
       //login with email and password
       loginUser(email, pass, ctx);
     } else {
-      loginUser("unregistered","123456789",ctx);
+      loginUser("unregistered@socbook.com","123456789",ctx);
     }
   }
   void loginUser(String email, String pass, BuildContext ctx) {

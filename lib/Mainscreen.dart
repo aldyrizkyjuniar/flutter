@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -37,6 +38,7 @@ class _MainscreenState extends State<Mainscreen> {
   void initState() {
     super.initState();
     _loadData();
+    _loadCartQuantity();
     if (widget.user.email == "admin@socbook.com") {
       _isadmin = true;
     }
@@ -47,7 +49,6 @@ class _MainscreenState extends State<Mainscreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     TextEditingController _prdController = new TextEditingController();
-
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
@@ -196,7 +197,7 @@ class _MainscreenState extends State<Mainscreen> {
         ),
          floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
-              if (widget.user.email == "unregistered") {
+              if (widget.user.email == "unregistered@socbook.com") {
                 Toast.show("Please register to use this function", context,
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                 return;
@@ -209,7 +210,6 @@ class _MainscreenState extends State<Mainscreen> {
                     duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
                 return;
               } else {
-
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -217,7 +217,7 @@ class _MainscreenState extends State<Mainscreen> {
                               user: widget.user,
                             )));
                             _loadData();
-                          //  _loadCartQuantity();
+                            _loadCartQuantity();
               }
             },
             icon: Icon(Icons.add_shopping_cart),
@@ -240,7 +240,7 @@ class _MainscreenState extends State<Mainscreen> {
     });
   }
    void _loadCartQuantity() async {
-    String urlLoadJobs = "https://slumberjer.com/grocery/php/load_cartquantity.php";
+    String urlLoadJobs = "https://socbookweb.000webhostapp.com/load_cartquantity.php";
     await http.post(urlLoadJobs, body: {
       "email": widget.user.email,
     }).then((res) {
@@ -248,7 +248,6 @@ class _MainscreenState extends State<Mainscreen> {
       }else{
         widget.user.quantity = res.body;
       }
-
     }).catchError((err) {
       print(err);
     });
@@ -266,21 +265,33 @@ class _MainscreenState extends State<Mainscreen> {
       http
           .post(urlLoadJobs, body: {
             "name": prname.toString(),
+            
           })
+          
           .timeout(const Duration(seconds: 4))
           .then((res) {
+            
             if (res.body == "nodata") {
+              
               Toast.show("Product not found", context,
                   duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
               pr.hide();
+                setState(() {
+                titlecenter = "No product found";
+                curtype = "search for " + "'" + prname + "'";
+                productdata = null;
+              });
+              
               FocusScope.of(context).requestFocus(new FocusNode());
               return;
             }
             setState(() {
+              
               var extractdata = json.decode(res.body);
               productdata = extractdata["products"];
               FocusScope.of(context).requestFocus(new FocusNode());
-              curtype = prname;
+             curtype = "search for " + "'" + prname + "'";
+            
               pr.hide();
             });
           })
@@ -301,7 +312,7 @@ class _MainscreenState extends State<Mainscreen> {
   }
 
   _addtocartdialog(int index) {
-     if (widget.user.email == "unregistered") {
+     if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -412,6 +423,16 @@ class _MainscreenState extends State<Mainscreen> {
         });
   }
   void _addtoCart(int index) {
+    if (widget.user.email == "unregistered@socbook.com") {
+      Toast.show("Please register first", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (widget.user.email == "admin@socbook.com") {
+      Toast.show("Admin mode", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
     try {
       int cquantity = int.parse(productdata[index]["quantity"]);
       print(cquantity);
@@ -439,6 +460,7 @@ class _MainscreenState extends State<Mainscreen> {
             List respond = res.body.split(",");
             setState(() {
               cartquantity = respond[1];
+              widget.user.quantity = cartquantity;
             });
             Toast.show("Success add to cart", context,
                 duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -515,17 +537,64 @@ class _MainscreenState extends State<Mainscreen> {
     }
   }
 
-  Future<bool> _onBackPressed() {}
+  Future<bool> _onBackPressed() {
+        return showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            title: new Text(
+              'Are you sure?',
+              style: TextStyle(
+                color: Colors.blue,
+              ),
+            ),
+            content: new Text(
+              'Do you want to exit an App',
+              style: TextStyle(
+                color: Colors.blue,
+              ),
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                  onPressed: () {
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  },
+                  child: Text(
+                    "Exit",
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  )),
+              MaterialButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  )),
+            ],
+          ),
+        ) ??
+        false;
+  }
   Widget mainDrawer(BuildContext context) {
+    clipper: _DrawerClipper();
     return Drawer(
+      
       child: ListView(
+        
         children: <Widget>[
+          
           UserAccountsDrawerHeader(
             accountName: Text(widget.user.name),
             accountEmail: Text(widget.user.email),
             otherAccountsPictures: <Widget>[
               Text("RM " + widget.user.credit,
-                  style: TextStyle(fontSize: 16.0, color: Colors.blue)),
+                  style: TextStyle(fontSize: 16.0, color: Colors.white)),
             ],
             currentAccountPicture: CircleAvatar(
               backgroundColor:
@@ -656,4 +725,20 @@ class _MainscreenState extends State<Mainscreen> {
       ),
     );
   }
+}
+
+class _DrawerClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+
+    path.moveTo(50, 0);
+    path.quadraticBezierTo(0, size.height / 2, 50, size.height);
+    path.lineTo(size.width, size.height);
+    path.lineTo(size.width, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }

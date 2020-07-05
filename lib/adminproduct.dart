@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:socbook/user.dart';
 import 'package:socbook/Newproduct.dart';
 import 'package:socbook/Editproduct.dart';
@@ -37,6 +39,8 @@ class _AdminProductState extends State<AdminProduct> {
   int quantity = 1;
   String titlecenter = "Loading product...";
   var _tapPosition;
+  String scanPrId;
+  String server = "https://socbookweb.000webhostapp.com";
    @override
   void initState() {
     super.initState();
@@ -53,7 +57,7 @@ class _AdminProductState extends State<AdminProduct> {
         title: Text(
           'Manage Your Products',
           style: TextStyle(
-            color: Colors.blue,
+            color: Colors.white,
           ),
         ),
         actions: <Widget>[
@@ -98,7 +102,7 @@ class _AdminProductState extends State<AdminProduct> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+                      color: Colors.blue)),
               productdata == null
                   ? Flexible(
                       child: Container(
@@ -113,19 +117,21 @@ class _AdminProductState extends State<AdminProduct> {
                   : Expanded(
                       child: GridView.count(
                           crossAxisCount: 2,
-                          childAspectRatio: (screenWidth / screenHeight) / 0.8,
+                          childAspectRatio: (screenWidth / screenHeight) / 0.65,
                           children: List.generate(productdata.length, (index) {
                             return Container(
-                                child: Card(
-                                    elevation: 10,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(5),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                child: InkWell(
+                                  onTap: () => _showPopupMenu(index),
+                                  onTapDown: _storePosition,
+                                  child: Card(
+                                      elevation: 10,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(5),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                         children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () => _onImageDisplay(index),
+                                         Container(
                                             child: Container(
                                               height: screenHeight / 5.9,
                                               width: screenWidth / 3.5,
@@ -170,7 +176,7 @@ class _AdminProductState extends State<AdminProduct> {
                                           ),
                                         ],
                                       ),
-                                    )));
+                                    ))));
                           })))
             ],
           ),
@@ -181,16 +187,133 @@ class _AdminProductState extends State<AdminProduct> {
           SpeedDialChild(
               child: Icon(Icons.new_releases),
               label: "New Product",
-              labelBackgroundColor: Colors.white,
+              labelBackgroundColor: Colors.blue,
               onTap: createNewProduct),
+                        SpeedDialChild(
+              child: Icon(MdiIcons.barcodeScan),
+              label: "Scan Product",
+              labelBackgroundColor: Colors.blue, //_changeLocality()
+              onTap: () => scanProductDialog()),
           SpeedDialChild(
               child: Icon(Icons.report),
               label: "Product Report",
-              labelBackgroundColor: Colors.white, //_changeLocality()
+              labelBackgroundColor: Colors.blue, //_changeLocality()
               onTap: () => null),
         ],
       ),
     );
+  }
+   void scanProductDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          title: new Text(
+            "Select scan options:",
+            style: TextStyle(
+              color: Colors.blue,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              MaterialButton(
+                  color: Colors.blue,
+                  onPressed: scanBarcodeNormal,
+                  elevation: 5,
+                  child: Text(
+                    "Bar Code",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              MaterialButton(
+                  color: Colors.blue,
+                  onPressed: scanQR,
+                  elevation: 5,
+                  child: Text(
+                    "QR Code",
+                    style: TextStyle(color: Colors.black),
+                  )),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      if (barcodeScanRes == "-1") {
+        scanPrId = "";
+      } else {
+        scanPrId = barcodeScanRes;
+        Navigator.of(context).pop();
+        _loadSingleProduct(scanPrId);
+      }
+    });
+  }
+  void _loadSingleProduct(String prid) {
+    String urlLoadJobs = server + "/load_products.php";
+    http.post(urlLoadJobs, body: {
+      "prid": prid,
+    }).then((res) {
+      print(res.body);
+      if (res.body == "nodata") {
+        Toast.show("Not found", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      } else {
+        setState(() {
+          var extractdata = json.decode(res.body);
+          productdata = extractdata["products"];
+          print(productdata);
+        });
+      }
+    }).catchError((err) {
+      print(err);
+    });
+  }
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      if (barcodeScanRes == "-1") {
+        scanPrId = "";
+      } else {
+        scanPrId = barcodeScanRes;
+        Navigator.of(context).pop();
+        _loadSingleProduct(scanPrId);
+      }
+    });
   }
    void _loadData() {
     String urlLoadJobs =
@@ -252,6 +375,7 @@ class _AdminProductState extends State<AdminProduct> {
   }
   _onProductDetail(int index) async {
     print(productdata[index]['name']);
+    print(productdata[index]['id']);
     Product product = new Product(
         pid: productdata[index]['id'],
         name: productdata[index]['name'],
@@ -269,44 +393,12 @@ class _AdminProductState extends State<AdminProduct> {
     _loadData();
   }
 
-   _onImageDisplay(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            content: new Container(
-              color: Colors.white,
-              height: screenHeight / 2.2,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      height: screenWidth / 1.5,
-                      width: screenWidth / 1.5,
-                      decoration: BoxDecoration(
-                          //border: Border.all(color: Colors.black),
-                          image: DecorationImage(
-                              fit: BoxFit.scaleDown,
-                              image: NetworkImage(
-                                "https://socbookweb.000webhostapp.com/images/${productdata[index]['id']}.jpg",
-                              )))),
-                ],
-              ),
-            ));
-      },
-    );
-  }
   _showPopupMenu(int index) async {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject();
 
     await showMenu(
       context: context,
-      color: Colors.white,
+      color: Colors.blue,
       position: RelativeRect.fromRect(
           _tapPosition & Size(40, 40), // smaller rect, the touch area
           Offset.zero & overlay.size // Bigger rect, the entire screen
@@ -353,18 +445,18 @@ class _AdminProductState extends State<AdminProduct> {
           title: new Text(
             "Delete Product Id " + productdata[index]['id'],
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.blue,
             ),
           ),
           content:
-              new Text("Are you sure?", style: TextStyle(color: Colors.white)),
+              new Text("Are you sure?", style: TextStyle(color: Colors.blue)),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text(
                 "Yes",
                 style: TextStyle(
-                  color: Color.fromRGBO(101, 255, 218, 50),
+                  color: Colors.blue,
                 ),
               ),
               onPressed: () {
@@ -376,7 +468,7 @@ class _AdminProductState extends State<AdminProduct> {
               child: new Text(
                 "No",
                 style: TextStyle(
-                  color: Color.fromRGBO(101, 255, 218, 50),
+                  color: Colors.blue,
                 ),
               ),
               onPressed: () {
@@ -394,7 +486,7 @@ class _AdminProductState extends State<AdminProduct> {
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Deleting product...");
     pr.show();
-    http.post("https://slumberjer.com/grocery/php/delete_product.php", body: {
+    http.post(server + "/delete_product.php", body: {
       "proid": productdata[index]['id'],
     }).then((res) {
       print(res.body);
@@ -412,6 +504,7 @@ class _AdminProductState extends State<AdminProduct> {
       print(err);
       pr.hide();
     });
+    _loadData();
   }
     Future<void> createNewProduct() async {
     await Navigator.push(context,

@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:socbook/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
+import 'package:flutter_login/flutter_login.dart';
 
 void main() => runApp(Loginscreen());
 bool rememberMe = false;
@@ -35,167 +36,248 @@ class _LoginscreenState extends State<Loginscreen> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          children: <Widget>[
-            lowerHalf(context),
-            upperHalf(context),
-            loginCard(context),
-            pageTitle(),
-          ],
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Stack(
+            children: <Widget>[
+              Container(
+                height: double.infinity,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF73AEF5),
+                      Color(0xFF61A4F1),
+                      Color(0xFF478DE0),
+                      Color(0xFF398AE5),
+                    ],
+                    stops: [0.1, 0.4, 0.7, 0.9],
+                  ),
+                ),
+              ),
+        Container(
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40.0,
+                    vertical: 120.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                     Text(
+                        'Sign In',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'OpenSans',
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      
+                      SizedBox(height: 30.0),
+                      _buildEmailTF(),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      _buildPasswordTF(),
+                      _buildForgotPasswordBtn(),
+                      _buildRememberMeCheckbox(),
+                      _buildLoginBtn(),
+                      _buildSignupBtn(),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget upperHalf(BuildContext context) {
-    return Container(
-      height: screenHeight / 2,
-      child: Image.asset(
-        'images/book.jpg',
-        fit: BoxFit.cover,
-      ),
-    );
-  }
-
-  Widget lowerHalf(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        height: screenHeight / 2,
-        color: Color(0xFFECF0F3),
-      ),
-    );
-  }
-
-  Widget loginCard(BuildContext context) {
+ Widget _buildEmailTF() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        Text(
+          'Email',
+          style: TextStyle(
+               fontSize: 16,
+               fontWeight: FontWeight.bold,
+               color: Colors.white)
+
+        ),
+        SizedBox(height: 10.0),
         Container(
-          margin: EdgeInsets.only(top: screenHeight / 4),
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+          alignment: Alignment.centerLeft,
+        //  decoration: kBoxDecorationStyle,
+          height: 60.0,
+          child: TextField(
+            controller: _emailEdit,
+            keyboardType: TextInputType.emailAddress,
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'OpenSans',
             ),
-            elevation: 8,
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  TextFormField(
-                    controller: _emailEdit,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        labelText: "Your Email", icon: Icon(Icons.email)),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _passEdit,
-                    decoration: InputDecoration(
-                        labelText: "Password", icon: Icon(Icons.lock)),
-                    obscureText: true,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Checkbox(
-                        value: rememberMe,
-                        onChanged: (bool value) {
-                          _onRememberMeChanged(value);
-                        },
-                      ),
-                      Text('Remember Me ',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue)),
-                      Expanded(
-                        child: Container(),
-                      ),
-                      FlatButton(
-                        child: Text("Login"),
-                        color: Color(0xFF4B9DFE),
-                        textColor: Colors.white,
-                        padding: EdgeInsets.only(
-                            left: 38, right: 38, top: 15, bottom: 15),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                        onPressed: this._userLogin,
-                      )
-                    ],
-                  )
-                ],
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.email,
+                color: Colors.white,
               ),
+              hintText: 'Enter your Email',
+          //    hintStyle: kHintTextStyle,
             ),
           ),
         ),
-        MaterialButton(
-          onPressed: _forgotPassword,
-          child: Text("Forgot Password ?"),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: 40,
-            ),
-            Text(
-              "Don't have an account ?",
-              style: TextStyle(color: Colors.grey),
-            ),
-            GestureDetector(
-              onTap: _registerUser,
-              child: Text(
-                "Create Account",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        )
       ],
     );
   }
 
-  Widget pageTitle() {
+  Widget _buildPasswordTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Password',
+      style: TextStyle(
+           fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white)
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+       //   decoration: kBoxDecorationStyle,
+          height: 60.0,
+          child: TextField(
+            controller: _passEdit,
+            obscureText: true,
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.lock,
+                color: Colors.white,
+              ),
+              hintText: 'Enter your Password',
+         //     hintStyle: kHintTextStyle,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildForgotPasswordBtn() {
     return Container(
-      margin: EdgeInsets.only(top: 50),
+      alignment: Alignment.centerRight,
+      child: FlatButton(
+        onPressed:_forgotPassword, 
+        padding: EdgeInsets.only(right: 0.0),
+        child: Text(
+          'Forgot Password?',
+        style: TextStyle(
+           fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white)
+        )
+        )
+      );
+  }
+
+  Widget _buildRememberMeCheckbox() {
+    return Container(
+      height: 20.0,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(
-            Icons.home,
-            size: 48,
-            color: Colors.white,
+          Theme(
+            data: ThemeData(unselectedWidgetColor: Colors.white),
+            child: Checkbox(
+              value: rememberMe,
+              checkColor: Colors.green,
+              activeColor: Colors.white,
+              onChanged: (bool  value) {
+                setState(() {
+                   _onRememberMeChanged(value);
+                });
+              },
+            ),
           ),
           Text(
-            "SOCBook",
+            'Remember me',
             style: TextStyle(
-                fontSize: 34, color: Colors.white, fontWeight: FontWeight.w400),
-          )
+           fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white)
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoginBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: double.infinity,
+      child: RaisedButton(
+        elevation: 5.0,
+        onPressed: _userLogin, 
+        padding: EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+    
+        color: Colors.white,
+        child: Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Color(0xFF527DAA),
+            letterSpacing: 1.5,
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'OpenSans',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignupBtn() {
+    return GestureDetector(
+      onTap: _registerUser, 
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: 'Don\'t have an Account? ',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            TextSpan(
+              text: 'Sign Up',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

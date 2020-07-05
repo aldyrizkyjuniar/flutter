@@ -2,32 +2,38 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socbook/Loginscreen.dart';
 import 'package:socbook/Registerscreen.dart';
+import 'package:socbook/storecredit.dart';
 import 'user.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:recase/recase.dart';
+
 void main() => runApp(ProfileScreen());
- 
+
 class ProfileScreen extends StatefulWidget {
   final User user;
   const ProfileScreen({Key key, this.user}) : super(key: key);
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
-  }
-  
+}
 
 class _ProfileScreenState extends State<ProfileScreen> {
-    double screenHeight, screenWidth;
-      @override
+  String server = "https://socbookweb.000webhostapp.com";
+  double screenHeight, screenWidth;
+  final f = new DateFormat('dd-MM-yyyy hh:mm a');
+  var parsedDate;
+  @override
   void initState() {
     super.initState();
     print("profile screen");
   }
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -36,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: Text('User Profile'),
       ),
-        body: Center(
+      body: Center(
         child: Column(
           children: <Widget>[
             SizedBox(height: 5),
@@ -57,25 +63,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: screenWidth / 3.2,
                             decoration: new BoxDecoration(
                               shape: BoxShape.circle,
-                              //border: Border.all(color: Colors.black),
+                              border: Border.all(color: Colors.black),
                             ),
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
-                              imageUrl:
-                                  "https://socbookweb.000webhostapp.com/profile/${widget.user.email}.jpg",
+                              imageUrl: server +
+                                  "/profile/${widget.user.email}.jpg",
                               placeholder: (context, url) => new SizedBox(
                                   height: 10.0,
                                   width: 10.0,
                                   child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) =>
-                                  new Icon(MdiIcons.cameraIris, size: 64.0),
+                              errorWidget: (context, url, error) => new Icon(
+                                MdiIcons.cameraIris,
+                                size: 64.0,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                         SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                             child: Container(
-                           color: Colors.blue,
+                          color: Colors.blue,
                           child: Table(
                               defaultColumnWidth: FlexColumnWidth(1.0),
                               columnWidths: {
@@ -158,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Divider(
                       height: 2,
-                      color: Color.fromRGBO(101, 255, 218, 50),
+                      color: Colors.blue,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -170,8 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(color: Colors.white),
                             ),
                             Text(widget.user.credit,
-                                style: TextStyle(
-                                    color: Colors.white))
+                                style: TextStyle(color: Colors.white))
                           ],
                         )
                       ],
@@ -192,47 +200,142 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Divider(
               height: 2,
-              color: Colors.white,
+              color: Colors.blue,
             ),
-            Expanded(
-                //color: Colors.red,
+            Container(
+               // color: Colors.blue,
                 child: ListView(
                     padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     shrinkWrap: true,
                     children: <Widget>[
-                  MaterialButton(
+                  RaisedButton(
+                    elevation: 5.0,
                     onPressed: changeName,
-                    child: Text("CHANGE YOUR NAME"),
+                    padding: EdgeInsets.all(15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blue,
+                    child: Text(
+                      'Change Your Name',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
-                  MaterialButton(
+                  SizedBox(height: 10.0),
+                   RaisedButton(
+                    elevation: 5.0,
                     onPressed: changePassword,
-                    child: Text("CHANGE YOUR PASSWORD"),
+                    padding: EdgeInsets.all(15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blue,
+                    child: Text(
+                      'Change Your Password',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
-                  MaterialButton(
+                  SizedBox(height: 10.0),
+                  RaisedButton(
+                    elevation: 5.0,
                     onPressed: changePhone,
-                    child: Text("CHANGE YOUR PHONE"),
+                    padding: EdgeInsets.all(15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blue,
+                    child: Text(
+                      'Change Your Phone',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
-                  MaterialButton(
+                  SizedBox(height: 10.0),
+                  RaisedButton(
+                    elevation: 5.0,
                     onPressed: _gotologinPage,
-                    child: Text("GO LOGIN SCREEN"),
+                    padding: EdgeInsets.all(15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blue,
+                    child: Text(
+                      'Go Login Screen',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
-                  MaterialButton(
+                  SizedBox(height: 10.0),
+                   RaisedButton(
+                    elevation: 5.0,
                     onPressed: _registerAccount,
-                    child: Text("REGISTER NEW ACCOUNT"),
+                    padding: EdgeInsets.all(15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blue,
+                    child: Text(
+                      'Go Register Screen',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
-                  MaterialButton(
-                    onPressed: null,
-                    child: Text("BUY STORE CREDIT"),
+                  SizedBox(height: 10.0),
+                  RaisedButton(
+                    elevation: 5.0,
+                    onPressed: buyStoreCredit,
+                    padding: EdgeInsets.all(15.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.blue,
+                    child: Text(
+                      'Buy Credit Store',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
-                  
                 ])),
           ],
         ),
       ),
     );
   }
+
   void _takePicture() async {
-    if (widget.user.email == "unregistered") {
+    if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -246,8 +349,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     } else {
       String base64Image = base64Encode(_image.readAsBytesSync());
-      print(base64Image);
-      http.post("https://socbookweb.000webhostapp.com/upload_image.php", body: {
+      print("asem" + base64Image);
+      http.post(server + "/php/upload_image.php", body: {
         "encoded_string": base64Image,
         "email": widget.user.email,
       }).then((res) {
@@ -258,7 +361,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             manager.emptyCache();
           });
         } else {
-          Toast.show("Tidak berjaya", context,
+          Toast.show("Not Work", context,
               duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         }
       }).catchError((err) {
@@ -266,13 +369,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
+
   void changeName() {
-    if (widget.user.email == "unregistered") {
+    if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
-    if (widget.user.email == "admin@grocery.com") {
+    if (widget.user.email == "admin@socbook.com") {
       Toast.show("Admin Mode!!!", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -324,8 +428,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ]);
         });
   }
-   _changeName(String name) {
-    if (widget.user.email == "unregistered") {
+
+  _changeName(String name) {
+    if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -356,8 +461,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(err);
     });
   }
+
   void changePassword() {
-    if (widget.user.email == "unregistered") {
+    if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -429,6 +535,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ]);
         });
   }
+
   updatePassword(String pass1, String pass2) {
     if (pass1 == "" || pass2 == "") {
       Toast.show("Please enter your password", context,
@@ -455,8 +562,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(err);
     });
   }
+
   void changePhone() {
-    if (widget.user.email == "unregistered") {
+    if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -534,7 +642,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(err);
     });
   }
-   void _gotologinPage() {
+
+  void _gotologinPage() {
     // flutter defined function
     print(widget.user.name);
     showDialog(
@@ -589,7 +698,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
-   void _registerAccount() {
+
+  void _registerAccount() {
     // flutter defined function
     print(widget.user.name);
     showDialog(
@@ -643,6 +753,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         );
       },
+    );
+  }
+
+  void buyStoreCredit() {
+    if (widget.user.email == "unregistered@socbook.com") {
+      Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    TextEditingController creditController = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              title: new Text(
+                "Buy Store Credit?",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              ),
+              content: new TextField(
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                  controller: creditController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Enter RM',
+                    icon: Icon(
+                      Icons.attach_money,
+                      color: Colors.blue,
+                    ),
+                  )),
+              actions: <Widget>[
+                new FlatButton(
+                    child: new Text(
+                      "Yes",
+                      style: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                    onPressed: () =>
+                        _buyCredit(creditController.text.toString())),
+                new FlatButton(
+                  child: new Text(
+                    "No",
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onPressed: () => {Navigator.of(context).pop()},
+                ),
+              ]);
+        });
+  }
+
+  _buyCredit(String cr) {
+    print("RM " + cr);
+    if (cr.length <= 0) {
+      Toast.show("Please enter correct amount", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        title: new Text(
+          'Buy store credit RM ' + cr,
+          style: TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+        content: new Text(
+          'Are you sure?',
+          style: TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                Navigator.of(context).pop(false);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => StoreCredit(
+                              user: widget.user,
+                              val: cr,
+                            )));
+              },
+              child: Text(
+                "Ok",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              )),
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              )),
+        ],
+      ),
     );
   }
 }

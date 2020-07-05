@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -34,12 +33,9 @@ class _NewproductState extends State<Newproduct> {
   final focus3 = FocusNode();
   String selectedType;
   List<String> listType = [
-    "Drink",
-    "Canned Food",
-    "Vegetable",
-    "Meat",
-    "Bread",
-    "Other",
+    "design",
+    "programming",
+    "gaming",
   ];
   @override
   Widget build(BuildContext context) {
@@ -557,7 +553,7 @@ class _NewproductState extends State<Newproduct> {
     pr.show();
     String base64Image = base64Encode(_image.readAsBytesSync());
 
-    http.post("https://slumberjer.com/grocery/php/insert_product.php", body: {
+    http.post("https://socbookweb.000webhostapp.com/php/insert_product.php", body: {
       "prid": _scanBarcode,
       "prname": prnameEditingController.text,
       "quantity": qtyEditingController.text,
