@@ -69,6 +69,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ]),
         body: Container(
+          
             child: Column(
           children: <Widget>[
             Text(
@@ -629,8 +630,9 @@ class _CartScreenState extends State<CartScreen> {
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         _loadCart();
       } else {
-        Toast.show("Failed", context,
+        Toast.show("Cart Updated", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+            _loadCart();
       }
     }).catchError((err) {
       print(err);

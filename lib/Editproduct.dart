@@ -11,11 +11,11 @@ import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
- 
+
 void main() => runApp(Editproduct());
- 
+
 class Editproduct extends StatefulWidget {
-    final User user;
+  final User user;
   final Product product;
 
   const Editproduct({Key key, this.user, this.product}) : super(key: key);
@@ -24,7 +24,7 @@ class Editproduct extends StatefulWidget {
 }
 
 class _EditproductState extends State<Editproduct> {
-   TextEditingController prnameEditingController = new TextEditingController();
+  TextEditingController prnameEditingController = new TextEditingController();
   TextEditingController priceEditingController = new TextEditingController();
   TextEditingController qtyEditingController = new TextEditingController();
   TextEditingController typeEditingController = new TextEditingController();
@@ -57,6 +57,7 @@ class _EditproductState extends State<Editproduct> {
     print(weigthEditingController.text);
     print(typeEditingController.text);
   }
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -67,7 +68,20 @@ class _EditproductState extends State<Editproduct> {
       appBar: AppBar(
         title: Text('Update Your Product'),
       ),
-         body: Container(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF73AEF5),
+              Color(0xFF61A4F1),
+              Color(0xFF478DE0),
+              Color(0xFF398AE5),
+            ],
+            stops: [0.1, 0.4, 0.7, 0.9],
+          ),
+        ),
         alignment: Alignment.topCenter,
         child: SingleChildScrollView(
             child: Column(
@@ -85,7 +99,7 @@ class _EditproductState extends State<Editproduct> {
                         child: CachedNetworkImage(
                           fit: BoxFit.fill,
                           imageUrl:
-                          "https://socbookweb.000webhostapp.com/images/${widget.product.pid}.jpg",
+                              "https://socbookweb.000webhostapp.com/images/${widget.product.pid}.jpg",
                           placeholder: (context, url) =>
                               new CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
@@ -103,9 +117,9 @@ class _EditproductState extends State<Editproduct> {
                               colorFilter: new ColorFilter.mode(
                                   Colors.black.withOpacity(0.6),
                                   BlendMode.dstATop),
-                              image:  _image == null
-                              ? AssetImage('images/phonecam.jpg')
-                              :FileImage(_image),
+                              image: _image == null
+                                  ? AssetImage('images/phonecam.png')
+                                  : FileImage(_image),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -294,7 +308,7 @@ class _EditproductState extends State<Editproduct> {
                                             hint: Text(
                                               'Type',
                                               style: TextStyle(
-                                                color: Colors.blue, 
+                                                color: Colors.blue,
                                               ),
                                             ), // Not necessary for Option 1
                                             value: selectedType,
@@ -377,13 +391,15 @@ class _EditproductState extends State<Editproduct> {
       ),
     );
   }
- void _choose() async {
+
+  void _choose() async {
     _image = await ImagePicker.pickImage(
         source: ImageSource.camera, maxHeight: 800, maxWidth: 800);
     _cropImage();
     setState(() {});
   }
-   Future<Null> _cropImage() async {
+
+  Future<Null> _cropImage() async {
     File croppedFile = await ImageCropper.cropImage(
         sourcePath: _image.path,
         aspectRatioPresets: Platform.isAndroid
@@ -410,6 +426,7 @@ class _EditproductState extends State<Editproduct> {
       });
     }
   }
+
   updateProductDialog() {
     showDialog(
       context: context,
@@ -458,7 +475,7 @@ class _EditproductState extends State<Editproduct> {
   }
 
   updateProduct() {
-    if (prnameEditingController.text.length < 4) {
+    if (prnameEditingController.text.length < 3) {
       Toast.show("Please enter product name", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
@@ -485,58 +502,58 @@ class _EditproductState extends State<Editproduct> {
         type: ProgressDialogType.Normal, isDismissible: false);
     pr.style(message: "Updating product...");
     pr.show();
-    String base64Image; 
-    
-    if (_image!=null){
-       base64Image = base64Encode(_image.readAsBytesSync());
-      http.post("https://socbookweb.000webhostapp.com/php/update_product.php", body: {
-      "prid": widget.product.pid,
-      "prname": prnameEditingController.text,
-      "quantity": qtyEditingController.text,
-      "price": price.toStringAsFixed(2),
-      "type": typeEditingController.text,
-      "weight": weigth.toStringAsFixed(2),
-      "encoded_string": base64Image,
-    }).then((res) {
-      print(res.body);
-      pr.hide();
-      if (res.body == "success") {
-        Toast.show("Update success", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        Navigator.of(context).pop();
-      } else {
-        Toast.show("Update failed", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }
-    }).catchError((err) {
-      print(err);
-      pr.hide();
-    });
-    }else{
-          http.post("https://socbookweb.000webhostapp.com/php/update_product.php", body: {
-      "prid": widget.product.pid,
-      "prname": prnameEditingController.text,
-      "quantity": qtyEditingController.text,
-      "price": price.toStringAsFixed(2),
-      "type": typeEditingController.text,
-      "weight": weigth.toStringAsFixed(2),
-    }).then((res) {
-      print(res.body);
-      pr.hide();
-      if (res.body == "success") {
-        Toast.show("Update success", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        Navigator.of(context).pop();
-      } else {
-        Toast.show("Update failed", context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-      }
-    }).catchError((err) {
-      print(err);
-      pr.hide();
-    });
+    String base64Image;
+
+    if (_image != null) {
+      base64Image = base64Encode(_image.readAsBytesSync());
+      http.post("https://socbookweb.000webhostapp.com/php/update_product.php",
+          body: {
+            "prid": widget.product.pid,
+            "prname": prnameEditingController.text,
+            "price": price.toStringAsFixed(2),
+            "quantity": qtyEditingController.text,
+            "type": typeEditingController.text,
+            "weight": weigth.toStringAsFixed(2),
+            "encoded_string": base64Image,
+          }).then((res) {
+        print(res.body);
+        pr.hide();
+        if (res.body == "success") {
+          Toast.show("Update success", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          Navigator.of(context).pop();
+        } else {
+          Toast.show("Update failed", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        }
+      }).catchError((err) {
+        print(err);
+        pr.hide();
+      });
+    } else {
+      http.post("https://socbookweb.000webhostapp.com/php/update_product.php",
+          body: {
+            "prid": widget.product.pid,
+            "prname": prnameEditingController.text,
+            "price": price.toStringAsFixed(2),
+            "quantity": qtyEditingController.text,
+            "type": typeEditingController.text,
+            "weight": weigth.toStringAsFixed(2),
+          }).then((res) {
+        print(res.body);
+        pr.hide();
+        if (res.body == "success") {
+          Toast.show("Update success", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+          Navigator.of(context).pop();
+        } else {
+          Toast.show("Update failed", context,
+              duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        }
+      }).catchError((err) {
+        print(err);
+        pr.hide();
+      });
     }
-
-
   }
 }

@@ -38,298 +38,292 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text('User Profile'),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: 5),
-            Card(
-              color: Colors.blue,
-              elevation: 5,
-              child: Padding(
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: _takePicture,
-                          child: Container(
-                            height: screenHeight / 4.8,
-                            width: screenWidth / 3.2,
-                            decoration: new BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black),
-                            ),
-                            child: CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              imageUrl: server +
-                                  "/profile/${widget.user.email}.jpg",
-                              placeholder: (context, url) => new SizedBox(
-                                  height: 10.0,
-                                  width: 10.0,
-                                  child: CircularProgressIndicator()),
-                              errorWidget: (context, url, error) => new Icon(
-                                MdiIcons.cameraIris,
-                                size: 64.0,
-                                color: Colors.white,
-                              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF73AEF5),
+                  Color(0xFF61A4F1),
+                  Color(0xFF478DE0),
+                  Color(0xFF398AE5),
+                ],
+              )),
+              child: Container(
+                width: double.infinity,
+                height: 325.0,
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: _takePicture,
+                        child: Container(
+                          height: screenHeight / 4.8,
+                          width: screenWidth / 3.2,
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black),
+                          ),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl:
+                                server + "/profile/${widget.user.email}.jpg",
+                            placeholder: (context, url) => new SizedBox(
+                                height: 10.0,
+                                width: 10.0,
+                                child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) => new Icon(
+                              MdiIcons.cameraIris,
+                              size: 64.0,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                        SizedBox(width: 10),
-                        Expanded(
-                            child: Container(
-                          color: Colors.blue,
-                          child: Table(
-                              defaultColumnWidth: FlexColumnWidth(1.0),
-                              columnWidths: {
-                                0: FlexColumnWidth(3.5),
-                                1: FlexColumnWidth(6.5),
-                              },
-                              children: [
-                                TableRow(children: [
-                                  TableCell(
-                                    child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        height: 20,
-                                        child: Text("Name",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white))),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      height: 20,
-                                      child: Text(widget.user.name,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                              color: Colors.white)),
+                      ),
+                      SizedBox(
+                        height: 5.0,
+                      ),
+                      Text(
+                        widget.user.email,
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Card(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 5.0),
+                        clipBehavior: Clip.antiAlias,
+                        color: Colors.white,
+                        elevation: 5.0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 22.0),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      "Name",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        height: 20,
-                                        child: Text("Email",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white))),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      height: 20,
-                                      child: Text(widget.user.email,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                              color: Colors.white)),
+                                    SizedBox(
+                                      height: 5.0,
                                     ),
-                                  ),
-                                ]),
-                                TableRow(children: [
-                                  TableCell(
-                                    child: Container(
-                                        alignment: Alignment.centerLeft,
-                                        height: 20,
-                                        child: Text("Phone",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white))),
-                                  ),
-                                  TableCell(
-                                    child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      height: 20,
-                                      child: Text(widget.user.phone,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                              color: Colors.white)),
+                                    Text(
+                                      widget.user.name,
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.blue,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      "Phone",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                ]),
-                              ]),
-                        )),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 2,
-                    ),
-                    Divider(
-                      height: 2,
-                      color: Colors.blue,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              "Store Credit",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Text(widget.user.credit,
-                                style: TextStyle(color: Colors.white))
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
+                                    SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                      widget.user.phone,
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.blue,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      "Credit",
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                      widget.user.credit,
+                                      style: TextStyle(
+                                        fontSize: 15.0,
+                                        color: Colors.blue,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              color: Colors.blue,
-              child: Center(
-                child: Text("SET YOUR PROFILE",
+              )),
+          Container(
+              // color: Colors.blue,
+              child: ListView(
+                  padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  shrinkWrap: true,
+                  children: <Widget>[
+                SizedBox(height: 5.0),
+                RaisedButton(
+                  elevation: 5.0,
+                  onPressed: changeName,
+                  padding: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Color(0xFF398AE5),
+                  child: Text(
+                    'Change Your Name',
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black)),
-              ),
-            ),
-            Divider(
-              height: 2,
-              color: Colors.blue,
-            ),
-            Container(
-               // color: Colors.blue,
-                child: ListView(
-                    padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    shrinkWrap: true,
-                    children: <Widget>[
-                  RaisedButton(
-                    elevation: 5.0,
-                    onPressed: changeName,
-                    padding: EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.blue,
-                    child: Text(
-                      'Change Your Name',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                   RaisedButton(
-                    elevation: 5.0,
-                    onPressed: changePassword,
-                    padding: EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.blue,
-                    child: Text(
-                      'Change Your Password',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
+                ),
+                SizedBox(height: 5.0),
+                RaisedButton(
+                  elevation: 5.0,
+                  onPressed: changePassword,
+                  padding: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Color(0xFF398AE5),
+                  child: Text(
+                    'Change Your Password',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  RaisedButton(
-                    elevation: 5.0,
-                    onPressed: changePhone,
-                    padding: EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.blue,
-                    child: Text(
-                      'Change Your Phone',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
+                ),
+                SizedBox(height: 5.0),
+                RaisedButton(
+                  elevation: 5.0,
+                  onPressed: changePhone,
+                  padding: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Color(0xFF398AE5),
+                  child: Text(
+                    'Change Your Phone',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  RaisedButton(
-                    elevation: 5.0,
-                    onPressed: _gotologinPage,
-                    padding: EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.blue,
-                    child: Text(
-                      'Go Login Screen',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
+                ),
+                SizedBox(height: 5.0),
+                RaisedButton(
+                  elevation: 5.0,
+                  onPressed: _gotologinPage,
+                  padding: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Color(0xFF398AE5),
+                  child: Text(
+                    'Go Login Screen',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                   RaisedButton(
-                    elevation: 5.0,
-                    onPressed: _registerAccount,
-                    padding: EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.blue,
-                    child: Text(
-                      'Go Register Screen',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
+                ),
+                SizedBox(height: 5.0),
+                RaisedButton(
+                  elevation: 5.0,
+                  onPressed: _registerAccount,
+                  padding: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Color(0xFF398AE5),
+                  child: Text(
+                    'Go Register Screen',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  RaisedButton(
-                    elevation: 5.0,
-                    onPressed: buyStoreCredit,
-                    padding: EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.blue,
-                    child: Text(
-                      'Buy Credit Store',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
+                ),
+                SizedBox(height: 10.0),
+                RaisedButton(
+                  elevation: 5.0,
+                  onPressed: buyStoreCredit,
+                  padding: EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  color: Color(0xFF398AE5),
+                  child: Text(
+                    'Buy Credit Store',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
                   ),
-                ])),
-          ],
-        ),
+                ),
+              ])),
+        ],
       ),
     );
   }
@@ -757,8 +751,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void buyStoreCredit() {
-    if (widget.user.email == "unregistered@socbook.com") {
+     if (widget.user.email == "unregistered@socbook.com") {
       Toast.show("Please register to use this function", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+      return;
+    }
+    if (widget.user.email == "admin@socbook.com") {
+      Toast.show("Admin Mode!!!", context,
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       return;
     }
@@ -870,3 +869,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+
+

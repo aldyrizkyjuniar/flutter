@@ -19,18 +19,18 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
 void main() => runApp(AdminProduct());
- 
+
 class AdminProduct extends StatefulWidget {
   final User user;
   const AdminProduct({Key key, this.user}) : super(key: key);
   @override
   _AdminProductState createState() => _AdminProductState();
-  
 }
 
 class _AdminProductState extends State<AdminProduct> {
-    List productdata;
+  List productdata;
   int curnumber = 1;
   double screenHeight, screenWidth;
   bool _visible = false;
@@ -41,12 +41,12 @@ class _AdminProductState extends State<AdminProduct> {
   var _tapPosition;
   String scanPrId;
   String server = "https://socbookweb.000webhostapp.com";
-   @override
+  @override
   void initState() {
     super.initState();
     _loadData();
-
   }
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -79,109 +79,265 @@ class _AdminProductState extends State<AdminProduct> {
           //
         ],
       ),
-        body: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              TextField(
-                  controller: _prdController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    labelText: 'Search',
-                    icon: Icon(Icons.search),
-                  )),
-              MaterialButton(
-                  color: Colors.blue,
-                  onPressed: () => {_sortItembyName(_prdController.text)},
-                  elevation: 5,
-                  child: Text(
-                    "Search Product",
-                    style: TextStyle(color: Colors.black),
-                  )),
-              Text(curtype,
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue)),
-              productdata == null
-                  ? Flexible(
-                      child: Container(
-                          child: Center(
-                              child: Text(
-                      titlecenter,
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
-                    ))))
-                  : Expanded(
-                      child: GridView.count(
-                          crossAxisCount: 2,
-                          childAspectRatio: (screenWidth / screenHeight) / 0.65,
-                          children: List.generate(productdata.length, (index) {
-                            return Container(
-                                child: InkWell(
+      body: Container(
+          child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF73AEF5),
+              Color(0xFF61A4F1),
+              Color(0xFF478DE0),
+              Color(0xFF398AE5),
+            ],
+            stops: [0.1, 0.4, 0.7, 0.9],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(height: 30.0),
+            Visibility(
+              visible: _visible,
+              child: Container(
+                height: screenHeight / 12.5,
+                margin: EdgeInsets.fromLTRB(20, 2, 20, 2),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.4),
+                    borderRadius: BorderRadius.all(Radius.circular(22.0))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Flexible(
+                        child: Container(
+                      height: 30,
+                      child: TextField(
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                          autofocus: false,
+                          controller: _prdController,
+                          decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.search,
+                              color: Colors.white,
+                            ),
+                            hintText: "Search Product",
+                            hintStyle: TextStyle(color: Colors.white),
+                          )),
+                    )),
+                    Flexible(
+                        child: MaterialButton(
+                            color: Colors.blue[100],
+                            onPressed: () =>
+                                {_sortItembyName(_prdController.text)},
+                            elevation: 5,
+                            child: Text(
+                              "Search Product",
+                              style: TextStyle(color: Colors.black),
+                            )))
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Visibility(
+              visible: _visible,
+              child: Card(
+                  color: Color(0xFF73AEF5),
+                  elevation: 10,
+                  child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("Recent"),
+                                    color: Colors.blue,
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(MdiIcons.update,
+                                            color: Colors.black),
+                                        Text(
+                                          "Recent",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("design"),
+                                    color: Colors.blue,
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          MdiIcons.formatPaint,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "design",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("programming"),
+                                    color: Colors.blue,
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          MdiIcons.keyboard,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "programming",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            Column(
+                              children: <Widget>[
+                                FlatButton(
+                                    onPressed: () => _sortItem("gaming"),
+                                    color: Colors.blue,
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Column(
+                                      // Replace with a Row for horizontal icon + text
+                                      children: <Widget>[
+                                        Icon(
+                                          MdiIcons.gamepad,
+                                          color: Colors.black,
+                                        ),
+                                        Text(
+                                          "gaming",
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      ],
+                                    )),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ))),
+            ),
+            Text(curtype,
+                style: TextStyle(
+                    fontFamily: 'OpenSans',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+            productdata == null
+                ? Flexible(
+                    child: Container(
+                        child: Center(
+                            child: Text(
+                    titlecenter,
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold),
+                  ))))
+                : Expanded(
+                    child: GridView.count(
+                        crossAxisCount: 1,
+                        childAspectRatio: (screenWidth / screenHeight) / 0.5,
+                        children: List.generate(productdata.length, (index) {
+                          return Container(
+                              child: InkWell(
                                   onTap: () => _showPopupMenu(index),
                                   onTapDown: _storePosition,
                                   child: Card(
+                                      color: Color(0xFF398AE5),
                                       elevation: 10,
                                       child: Padding(
                                         padding: EdgeInsets.all(5),
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
-                                        children: <Widget>[
-                                         Container(
-                                            child: Container(
-                                              height: screenHeight / 5.9,
-                                              width: screenWidth / 3.5,
-                                              child: ClipOval(
-                                                  child: CachedNetworkImage(
-                                                fit: BoxFit.fill,
-                                                imageUrl:
-                                                    "https://socbookweb.000webhostapp.com/images/${productdata[index]['id']}.jpg",
-                                                placeholder: (context, url) =>
-                                                    new CircularProgressIndicator(),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        new Icon(Icons.error),
-                                              )),
+                                          children: <Widget>[
+                                            Container(
+                                              child: Container(
+                                                height: screenHeight / 4,
+                                                width: screenWidth / 2.25,
+                                                child: ClipOval(
+                                                    child: CachedNetworkImage(
+                                                  fit: BoxFit.fill,
+                                                  imageUrl:
+                                                      "https://socbookweb.000webhostapp.com/images/${productdata[index]['id']}.jpg",
+                                                  placeholder: (context, url) =>
+                                                      new CircularProgressIndicator(),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          new Icon(Icons.error),
+                                                )),
+                                              ),
                                             ),
-                                          ),
-                                          Text(productdata[index]['name'],
-                                              maxLines: 1,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.blue)),
-                                          Text(
-                                            "RM " + productdata[index]['price'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.blue),
-                                          ),
-                                          Text(
-                                            "Quantity available:" +
-                                                productdata[index]['quantity'],
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Weight:" +
-                                                productdata[index]['weigth'] +
-                                                " gram",
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ))));
-                          })))
-            ],
-          ),
+                                            Text(productdata[index]['name'],
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white)),
+                                            Text(
+                                                "RM " +
+                                                    productdata[index]['price'],
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white)),
+                                            Text(
+                                                "Quantity available:" +
+                                                    productdata[index]
+                                                        ['quantity'],
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white)),
+                                            Text(
+                                                "Weight:" +
+                                                    productdata[index]
+                                                        ['weigth'] +
+                                                    " gram",
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                      ))));
+                        })))
+          ],
         ),
-              floatingActionButton: SpeedDial(
+      )),
+      floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
         children: [
           SpeedDialChild(
@@ -189,7 +345,7 @@ class _AdminProductState extends State<AdminProduct> {
               label: "New Product",
               labelBackgroundColor: Colors.blue,
               onTap: createNewProduct),
-                        SpeedDialChild(
+          SpeedDialChild(
               child: Icon(MdiIcons.barcodeScan),
               label: "Scan Product",
               labelBackgroundColor: Colors.blue, //_changeLocality()
@@ -203,7 +359,8 @@ class _AdminProductState extends State<AdminProduct> {
       ),
     );
   }
-   void scanProductDialog() {
+
+  void scanProductDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -269,6 +426,7 @@ class _AdminProductState extends State<AdminProduct> {
       }
     });
   }
+
   void _loadSingleProduct(String prid) {
     String urlLoadJobs = server + "/load_products.php";
     http.post(urlLoadJobs, body: {
@@ -289,6 +447,7 @@ class _AdminProductState extends State<AdminProduct> {
       print(err);
     });
   }
+
   Future<void> scanQR() async {
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -315,7 +474,8 @@ class _AdminProductState extends State<AdminProduct> {
       }
     });
   }
-   void _loadData() {
+
+  void _loadData() {
     String urlLoadJobs =
         "https://socbookweb.000webhostapp.com/load_product.php";
     http.post(urlLoadJobs, body: {}).then((res) {
@@ -328,6 +488,45 @@ class _AdminProductState extends State<AdminProduct> {
       print(err);
     });
   }
+
+  void _sortItem(String type) {
+    try {
+      ProgressDialog pr = new ProgressDialog(context,
+          type: ProgressDialogType.Normal, isDismissible: true);
+      pr.style(message: "Searching...");
+      pr.show();
+      String urlLoadJobs =
+          "https://socbookweb.000webhostapp.com/load_product.php";
+      http.post(urlLoadJobs, body: {
+        "type": type,
+      }).then((res) {
+        if (res.body == "nodata") {
+          setState(() {
+            productdata = null;
+            curtype = type;
+            titlecenter = "No product found";
+          });
+          pr.hide();
+        } else {
+          setState(() {
+            curtype = type;
+            var extractdata = json.decode(res.body);
+            productdata = extractdata["products"];
+            FocusScope.of(context).requestFocus(new FocusNode());
+            pr.hide();
+          });
+        }
+      }).catchError((err) {
+        print(err);
+        pr.hide();
+      });
+      pr.hide();
+    } catch (e) {
+      Toast.show("Error", context,
+          duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+    }
+  }
+
   void _sortItembyName(String prname) {
     try {
       print(prname);
@@ -373,6 +572,7 @@ class _AdminProductState extends State<AdminProduct> {
           duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
   }
+
   _onProductDetail(int index) async {
     print(productdata[index]['name']);
     print(productdata[index]['id']);
@@ -398,7 +598,7 @@ class _AdminProductState extends State<AdminProduct> {
 
     await showMenu(
       context: context,
-      color: Colors.blue,
+      color: Colors.white,
       position: RelativeRect.fromRect(
           _tapPosition & Size(40, 40), // smaller rect, the touch area
           Offset.zero & overlay.size // Bigger rect, the entire screen
@@ -430,6 +630,7 @@ class _AdminProductState extends State<AdminProduct> {
       elevation: 8.0,
     );
   }
+
   void _storePosition(TapDownDetails details) {
     _tapPosition = details.globalPosition;
   }
@@ -506,7 +707,8 @@ class _AdminProductState extends State<AdminProduct> {
     });
     _loadData();
   }
-    Future<void> createNewProduct() async {
+
+  Future<void> createNewProduct() async {
     await Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) => Newproduct()));
     _loadData();
